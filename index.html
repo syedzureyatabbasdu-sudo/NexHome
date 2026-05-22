@@ -7,15 +7,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-  :root { --ease: cubic-bezier(.4,0,.2,1); --radius: 20px; --radius-sm: 12px; --transition: 0.35s var(--ease); }
-  [data-theme="dark"] {
+  :root{--ease:cubic-bezier(.4,0,.2,1);--radius:20px;--radius-sm:12px;--transition:0.35s var(--ease);}
+  [data-theme="dark"]{
     --bg:#080c14;--bg2:#0e1421;--bg3:#151d2e;--card:#111827;--card2:#1a2540;
     --border:rgba(255,255,255,0.07);--text:#e8edf5;--text2:#7a8ba8;--text3:#4a5568;
     --accent:#38bdf8;--accent2:#818cf8;--green:#34d399;--orange:#fb923c;
     --red:#f87171;--yellow:#fbbf24;--glow:rgba(56,189,248,0.15);--glow2:rgba(129,140,248,0.12);
     --shadow:0 8px 32px rgba(0,0,0,0.4);--shadow-lg:0 20px 60px rgba(0,0,0,0.5);
   }
-  [data-theme="light"] {
+  [data-theme="light"]{
     --bg:#f0f4fc;--bg2:#e4eaf8;--bg3:#d8e0f4;--card:#ffffff;--card2:#eef2ff;
     --border:rgba(0,0,0,0.08);--text:#111827;--text2:#4b5563;--text3:#9ca3af;
     --accent:#0284c7;--accent2:#6366f1;--green:#059669;--orange:#d97706;
@@ -27,23 +27,28 @@
   body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
   body::after{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,var(--glow),transparent),radial-gradient(ellipse 50% 60% at 80% 80%,var(--glow2),transparent);pointer-events:none;}
 
-  /* ── LOGIN ── */
-  #loginPage{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  /* ══ LOGIN ══ */
+  #loginPage{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
   #loginPage.hidden{display:none;}
-  .login-wrap{width:100%;max-width:440px;animation:fadeUp 0.7s var(--ease) both;}
+  .login-wrap{width:100%;max-width:400px;animation:fadeUp 0.7s var(--ease) both;display:flex;flex-direction:column;align-items:center;gap:32px;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-  .login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:44px 40px 40px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;}
+
+  /* Big centred logo above the card */
+  .login-logo-block{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .login-logo-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 8px 32px var(--glow);animation:float 3.5s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .login-logo-name{font-size:32px;font-weight:900;letter-spacing:-0.5px;}
+  .login-logo-name span{color:var(--accent);}
+  .login-logo-sub{font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:2px;margin-top:-6px;}
+
+  /* Card */
+  .login-card{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px 32px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;}
   .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
   .login-card::after{content:'';position:absolute;bottom:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,var(--glow2),transparent 70%);pointer-events:none;}
-  .card-logo{display:flex;align-items:center;gap:14px;margin-bottom:36px;}
-  .logo-icon-login{width:50px;height:50px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 20px var(--glow);animation:float 3.5s ease-in-out infinite;}
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-  .l-logo-text{font-size:26px;font-weight:900;letter-spacing:-0.5px;line-height:1;}
-  .l-logo-text span{color:var(--accent);}
-  .l-logo-sub{font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:1.5px;margin-top:3px;}
-  .card-title{font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-0.3px;}
-  .card-sub{font-size:13px;color:var(--text2);margin-bottom:32px;line-height:1.5;}
-  .lfield{margin-bottom:20px;}
+
+  .card-title{font-size:22px;font-weight:700;margin-bottom:4px;}
+  .card-sub{font-size:13px;color:var(--text2);margin-bottom:28px;line-height:1.5;}
+  .lfield{margin-bottom:18px;}
   .lfield label{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;font-family:'Space Mono',monospace;}
   .input-wrap{position:relative;}
   .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;opacity:0.5;}
@@ -56,7 +61,7 @@
   .eye-btn:hover{color:var(--accent);}
   .error-msg{display:none;margin-top:8px;font-size:11px;color:var(--red);font-family:'Space Mono',monospace;align-items:center;gap:6px;}
   .error-msg.show{display:flex;}
-  .submit-btn{width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:14px;font-family:'Outfit',sans-serif;letter-spacing:0.5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 4px 20px var(--glow);transition:all 0.25s var(--ease);}
+  .submit-btn{width:100%;margin-top:8px;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:15px;font-family:'Outfit',sans-serif;letter-spacing:0.5px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 4px 20px var(--glow);transition:all 0.25s var(--ease);}
   .submit-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px var(--glow);}
   .submit-btn:active:not(:disabled){transform:translateY(0);}
   .submit-btn:disabled{opacity:0.7;cursor:not-allowed;}
@@ -74,29 +79,35 @@
   .success-bar{width:200px;height:3px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-top:8px;}
   .success-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;animation:fillBar 2s linear 0.3s forwards;width:0%;}
   @keyframes fillBar{to{width:100%}}
-  .theme-btn-login{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;z-index:5;}
+  .theme-btn-login{position:fixed;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;z-index:5;}
   .theme-btn-login:hover{background:var(--card2);transform:rotate(20deg);}
 
-  /* ── DASHBOARD ── */
+  /* ══ DASHBOARD ══ */
   #dashPage{display:none;}
   #dashPage.visible{display:block;}
   .app{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px 16px 60px;}
-  header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:24px;box-shadow:var(--shadow);backdrop-filter:blur(20px);}
-  .logo{display:flex;align-items:center;gap:12px;}
-  .logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px var(--glow);}
-  .logo-text{font-size:22px;font-weight:900;letter-spacing:-0.5px;}
+
+  /* Header */
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;box-shadow:var(--shadow);backdrop-filter:blur(20px);}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px var(--glow);}
+  .logo-text{font-size:20px;font-weight:900;letter-spacing:-0.5px;line-height:1;}
   .logo-text span{color:var(--accent);}
-  .header-right{display:flex;align-items:center;gap:14px;}
-  .conn-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:50px;font-size:12px;font-weight:600;font-family:'Space Mono',monospace;border:1px solid var(--border);background:var(--bg2);transition:all var(--transition);cursor:pointer;}
+  .logo-sub{font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:1.5px;}
+  .header-right{display:flex;align-items:center;gap:10px;}
+  .conn-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:50px;font-size:11px;font-weight:600;font-family:'Space Mono',monospace;border:1px solid var(--border);background:var(--bg2);transition:all var(--transition);cursor:pointer;}
   .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);transition:all 0.3s;}
   .conn-dot.connected{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite;}
   @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.5}}
-  .theme-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+  .theme-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
   .theme-btn:hover{background:var(--card2);transform:rotate(20deg);}
-  .logout-btn{padding:8px 16px;border-radius:50px;font-size:12px;font-weight:600;font-family:'Space Mono',monospace;border:1px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all 0.2s;}
+  .logout-btn{padding:7px 14px;border-radius:50px;font-size:11px;font-weight:600;font-family:'Space Mono',monospace;border:1px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all 0.2s;}
   .logout-btn:hover{border-color:var(--red);color:var(--red);}
-  .config-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-height:0;padding:0 24px;transition:max-height 0.4s var(--ease),padding 0.3s;box-shadow:var(--shadow);margin-bottom:24px;}
-  .config-panel.open{max-height:60vh;padding:24px;overflow-y:auto;} .config-panel.open::-webkit-scrollbar{width:4px;} .config-panel.open::-webkit-scrollbar-track{background:transparent;} .config-panel.open::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;} @media(max-width:600px){.config-panel.open{max-height:50vh;}}
+
+  /* Config panel */
+  .config-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-height:0;padding:0 24px;transition:max-height 0.4s var(--ease),padding 0.3s;box-shadow:var(--shadow);margin-bottom:20px;}
+  .config-panel.open{max-height:60vh;padding:24px;overflow-y:auto;}
+  .config-panel.open::-webkit-scrollbar{width:4px;} .config-panel.open::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
   .config-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;font-family:'Space Mono',monospace;}
   .config-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
   .field label{display:block;font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
@@ -104,40 +115,52 @@
   .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow);}
   .connect-btn{margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius-sm);color:#fff;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s;box-shadow:0 4px 16px var(--glow);}
   .connect-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glow);}
-  .section-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:14px;margin-left:4px;}
-  .sensor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
-  @media(max-width:600px){.sensor-grid{grid-template-columns:1fr;}}
-  .sensor-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:relative;overflow:hidden;box-shadow:var(--shadow);transition:transform 0.2s,box-shadow 0.2s;}
+
+  /* Scene buttons */
+  .scene-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  .scene-btn{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:18px 8px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all 0.25s var(--ease);box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .scene-btn::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--glow),transparent 70%);opacity:0;transition:opacity 0.3s;pointer-events:none;}
+  .scene-btn:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+  .scene-btn.active{border-color:var(--accent);background:var(--card2);}
+  .scene-btn.active::after{opacity:1;}
+  .scene-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--bg2);border:1px solid var(--border);transition:all 0.3s;}
+  .scene-btn.active .scene-icon{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;box-shadow:0 4px 16px var(--glow);}
+  .scene-name{font-size:13px;font-weight:700;color:var(--text2);transition:color 0.3s;}
+  .scene-btn.active .scene-name{color:var(--accent);}
+  @media(max-width:480px){.scene-btn{padding:14px 6px 12px;border-radius:14px;}.scene-icon{width:44px;height:44px;font-size:20px;}.scene-name{font-size:11px;}}
+
+  /* Sensor cards */
+  .section-label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:12px;margin-left:4px;}
+  .sensor-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;}
+  .sensor-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow);transition:transform 0.2s,box-shadow 0.2s;}
   .sensor-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
   .sensor-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
   .sensor-card.temp::before{background:linear-gradient(90deg,var(--orange),var(--yellow));}
   .sensor-card.hum::before{background:linear-gradient(90deg,var(--accent),var(--green));}
-  .sensor-card.gas::before{background:linear-gradient(90deg,var(--red),var(--orange));}
-  .sensor-icon{font-size:28px;margin-bottom:12px;display:flex;align-items:center;}
-  .sensor-label{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:6px;}
-  .sensor-value{font-size:42px;font-weight:700;line-height:1;font-family:'Space Mono',monospace;}
-  .sensor-value .unit{font-size:16px;color:var(--text2);margin-left:2px;}
+  .sensor-icon{font-size:24px;margin-bottom:8px;}
+  .sensor-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:4px;}
+  .sensor-value{font-size:38px;font-weight:700;line-height:1;font-family:'Space Mono',monospace;}
+  .sensor-value .unit{font-size:15px;color:var(--text2);margin-left:2px;}
   .sensor-card.temp .sensor-value{color:var(--orange);}
   .sensor-card.hum .sensor-value{color:var(--accent);}
-  .sensor-card.gas .sensor-value{color:var(--red);}
-  .sensor-bar{margin-top:14px;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;}
+  .sensor-bar{margin-top:12px;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;}
   .sensor-bar-fill{height:100%;border-radius:2px;transition:width 0.6s var(--ease);}
   .sensor-card.temp .sensor-bar-fill{background:linear-gradient(90deg,var(--orange),var(--yellow));}
   .sensor-card.hum .sensor-bar-fill{background:linear-gradient(90deg,var(--accent),var(--green));}
-  .sensor-card.gas .sensor-bar-fill{background:linear-gradient(90deg,var(--red),var(--orange));}
-  .sensor-status{font-size:11px;color:var(--text3);margin-top:8px;font-family:'Space Mono',monospace;}
-  .relay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px;}
-  @media(max-width:500px){.relay-grid{grid-template-columns:1fr;}}
-  .relay-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 24px 20px;display:flex;align-items:center;gap:18px;box-shadow:var(--shadow);transition:all 0.3s var(--ease);position:relative;overflow:hidden;cursor:pointer;}
+  .sensor-status{font-size:10px;color:var(--text3);margin-top:6px;font-family:'Space Mono',monospace;}
+
+  /* Relay cards */
+  .relay-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:24px;}
+  .relay-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:all 0.3s var(--ease);position:relative;overflow:hidden;cursor:pointer;}
   .relay-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,var(--glow),transparent 70%);opacity:0;transition:opacity 0.3s;pointer-events:none;}
   .relay-card.on::after{opacity:1;}
   .relay-card.on{border-color:rgba(56,189,248,0.25);}
-  .relay-icon-wrap{width:56px;height:56px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--bg2);border:1px solid var(--border);transition:all 0.3s;}
+  .relay-icon-wrap{width:50px;height:50px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg2);border:1px solid var(--border);transition:all 0.3s;}
   .relay-card.on .relay-icon-wrap{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;box-shadow:0 4px 20px var(--glow);}
   .relay-info{flex:1;}
-  .relay-name{font-size:16px;font-weight:700;margin-bottom:3px;}
+  .relay-name{font-size:15px;font-weight:700;margin-bottom:2px;}
   .relay-sub{font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;}
-  .relay-status-text{font-size:12px;font-weight:600;margin-top:6px;transition:color 0.3s;color:var(--text3);}
+  .relay-status-text{font-size:11px;font-weight:600;margin-top:4px;transition:color 0.3s;color:var(--text3);}
   .relay-card.on .relay-status-text{color:var(--green);}
   .toggle-wrap{flex-shrink:0;}
   .toggle{position:relative;width:56px;height:30px;cursor:pointer;}
@@ -146,46 +169,59 @@
   .toggle input:checked~.toggle-track{background:linear-gradient(90deg,var(--accent),var(--accent2));border-color:transparent;box-shadow:0 0 16px var(--glow);}
   .toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);transition:transform 0.3s var(--ease);}
   .toggle input:checked~.toggle-knob{transform:translateX(26px);}
-  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);}
-  .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-  .chart-title{font-size:15px;font-weight:700;}
-  .chart-legend{display:flex;gap:16px;}
-  .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);}
-  .legend-dot{width:8px;height:8px;border-radius:50%;}
-  canvas#historyChart{width:100%!important;height:160px!important;display:block;}
+
+  /* Section label for relay area */
+  .section-room{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:12px;margin-left:4px;}
+
+  /* Log */
   .log-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
   .log-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
   .log-title{font-size:13px;font-weight:700;font-family:'Space Mono',monospace;color:var(--text2);letter-spacing:1px;}
   .log-clear{font-size:11px;color:var(--accent);cursor:pointer;font-weight:600;}
   .log-body{height:150px;overflow-y:auto;padding:12px 20px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text3);line-height:1.8;}
-  .log-body::-webkit-scrollbar{width:4px;}
-  .log-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .log-body::-webkit-scrollbar{width:4px;} .log-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
   .log-entry{display:flex;gap:10px;}
   .log-entry .ts{color:var(--accent);flex-shrink:0;}
   .log-entry .msg{color:var(--text2);}
   .log-entry.warn .msg{color:var(--orange);}
   .log-entry.error .msg{color:var(--red);}
   .log-entry.success .msg{color:var(--green);}
+
+  /* Toast */
   .toast-container{position:fixed;bottom:24px;right:24px;z-index:1000;display:flex;flex-direction:column;gap:10px;}
   .toast{padding:14px 20px;border-radius:14px;background:var(--card2);border:1px solid var(--border);font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);animation:toast-in 0.3s var(--ease);display:flex;align-items:center;gap:10px;max-width:280px;backdrop-filter:blur(20px);}
   @keyframes toast-in{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
-  .gas-alert{display:none;background:linear-gradient(135deg,rgba(248,113,113,0.15),rgba(251,146,60,0.1));border:1px solid var(--red);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;font-size:13px;font-weight:600;color:var(--red);align-items:center;gap:10px;animation:alert-pulse 1.5s infinite;}
-  .gas-alert.show{display:flex;}
-  @keyframes alert-pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+
   .fade-in{animation:fadeIn 0.5s var(--ease) both;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
   .fade-in:nth-child(1){animation-delay:.05s}.fade-in:nth-child(2){animation-delay:.1s}.fade-in:nth-child(3){animation-delay:.15s}.fade-in:nth-child(4){animation-delay:.2s}
-  @media(max-width:480px){header{padding:14px 16px;}.logo-text{font-size:18px;}.sensor-value{font-size:34px;}.relay-card{padding:18px;}.login-card{padding:32px 24px 28px;}}
+
+  @media(max-width:480px){
+    header{padding:12px 14px;}
+    .logo-text{font-size:17px;}
+    .sensor-value{font-size:30px;}
+    .relay-card{padding:14px 16px;}
+    .login-card{padding:28px 20px 24px;}
+    .conn-badge span{display:none;}
+  }
 </style>
 </head>
 <body>
 
 <!-- ════════════════════ LOGIN PAGE ════════════════════ -->
 <div id="loginPage">
+  <button class="theme-btn-login" onclick="toggleTheme()"><span id="themeIconLogin">☀️</span></button>
   <div class="login-wrap">
-    <div class="login-card">
-      <button class="theme-btn-login" onclick="toggleTheme()"><span id="themeIconLogin">☀️</span></button>
 
+    <!-- Big logo above card -->
+    <div class="login-logo-block">
+      <div class="login-logo-icon">🏠</div>
+      <div class="login-logo-name">Nex<span>Home</span></div>
+      <div class="login-logo-sub">SMART CONTROL</div>
+    </div>
+
+    <!-- Sign-in card -->
+    <div class="login-card">
       <div class="success-overlay" id="successOverlay">
         <div class="success-icon">✓</div>
         <div class="success-title">Welcome back!</div>
@@ -193,22 +229,14 @@
         <div class="success-bar"><div class="success-bar-fill"></div></div>
       </div>
 
-      <div class="card-logo">
-        <div class="logo-icon-login">🏠</div>
-        <div>
-          <div class="l-logo-text">Nex<span>Home</span></div>
-          <div class="l-logo-sub">SMART CONTROL v1.0</div>
-        </div>
-      </div>
-
-      <div class="card-title">Welcome back</div>
-      <div class="card-sub">Sign in to access your smart home dashboard.</div>
+      <div class="card-title">Sign in</div>
+      <div class="card-sub">Enter your credentials to continue</div>
 
       <div class="lfield">
         <label>Username</label>
         <div class="input-wrap">
           <span class="input-icon">👤</span>
-          <input type="text" id="username" placeholder="Enter your username" autocomplete="username" spellcheck="false">
+          <input type="text" id="username" placeholder="user" autocomplete="username" spellcheck="false">
         </div>
         <div class="error-msg" id="userErr">⚠ Incorrect username</div>
       </div>
@@ -217,7 +245,7 @@
         <label>Password</label>
         <div class="input-wrap">
           <span class="input-icon">🔑</span>
-          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" spellcheck="false">
+          <input type="password" id="password" placeholder="••••" autocomplete="current-password" spellcheck="false">
           <button class="eye-btn" id="eyeBtn" onclick="toggleEye()" tabindex="-1">👁</button>
         </div>
         <div class="error-msg" id="passErr">⚠ Incorrect password</div>
@@ -225,6 +253,7 @@
 
       <button class="submit-btn" id="submitBtn" onclick="handleLogin(event)">Sign In</button>
     </div>
+
   </div>
 </div>
 
@@ -232,10 +261,14 @@
 <div id="dashPage">
 <div class="app">
 
+  <!-- Header -->
   <header class="fade-in">
     <div class="logo">
       <div class="logo-icon">🏠</div>
-      <div><div class="logo-text">Nex<span>Home</span></div></div>
+      <div>
+        <div class="logo-text">Nex<span>Home</span></div>
+        <div class="logo-sub">SMART CONTROL</div>
+      </div>
     </div>
     <div class="header-right">
       <div class="conn-badge" onclick="toggleConfig()">
@@ -247,6 +280,7 @@
     </div>
   </header>
 
+  <!-- MQTT Config (collapsible) -->
   <div class="config-panel" id="configPanel">
     <div class="config-title">⚙ MQTT Configuration</div>
     <div class="config-grid">
@@ -261,70 +295,72 @@
     <button class="connect-btn" style="background:var(--bg2);color:var(--text);box-shadow:none;margin-left:10px;" onclick="disconnectMQTT()">Disconnect</button>
   </div>
 
-  <div class="gas-alert" id="gasAlert">⚠️ HIGH GAS LEVEL DETECTED! Check your environment immediately.</div>
+  <!-- Scene buttons -->
+  <div class="section-label">Scenes</div>
+  <div class="scene-grid fade-in">
+    <div class="scene-btn active" id="scene-home" onclick="activateScene('home')">
+      <div class="scene-icon">🏠</div>
+      <div class="scene-name">Home</div>
+    </div>
+    <div class="scene-btn" id="scene-sleep" onclick="activateScene('sleep')">
+      <div class="scene-icon">🌙</div>
+      <div class="scene-name">Sleep</div>
+    </div>
+    <div class="scene-btn" id="scene-away" onclick="activateScene('away')">
+      <div class="scene-icon">🚶</div>
+      <div class="scene-name">Away</div>
+    </div>
+    <div class="scene-btn" id="scene-movie" onclick="activateScene('movie')">
+      <div class="scene-icon">🎬</div>
+      <div class="scene-name">Movie</div>
+    </div>
+  </div>
 
+  <!-- Sensor readings -->
   <div class="section-label">Live Sensor Readings</div>
   <div class="sensor-grid fade-in">
     <div class="sensor-card temp">
       <div class="sensor-icon">🌡️</div>
-      <div class="sensor-label">Temperature</div>
+      <div class="sensor-label">Temperature · AHT20</div>
       <div class="sensor-value" id="tempVal">--<span class="unit">°C</span></div>
       <div class="sensor-bar"><div class="sensor-bar-fill" id="tempBar" style="width:0%"></div></div>
       <div class="sensor-status" id="tempStatus">Awaiting data...</div>
     </div>
     <div class="sensor-card hum">
       <div class="sensor-icon">💧</div>
-      <div class="sensor-label">Humidity</div>
+      <div class="sensor-label">Humidity · AHT20</div>
       <div class="sensor-value" id="humVal">--<span class="unit">%</span></div>
       <div class="sensor-bar"><div class="sensor-bar-fill" id="humBar" style="width:0%"></div></div>
       <div class="sensor-status" id="humStatus">Awaiting data...</div>
     </div>
-    <div class="sensor-card gas">
-      <div class="sensor-icon">💨</div>
-      <div class="sensor-label">Gas Level (MQ6)</div>
-      <div class="sensor-value" id="gasVal">--<span class="unit">ppm</span></div>
-      <div class="sensor-bar"><div class="sensor-bar-fill" id="gasBar" style="width:0%"></div></div>
-      <div class="sensor-status" id="gasStatus">Awaiting data...</div>
-    </div>
   </div>
 
-  <div class="section-label">Relay Controls</div>
+  <!-- Relay controls -->
+  <div class="section-room">Bedroom</div>
   <div class="relay-grid fade-in">
     <div class="relay-card" id="card-relay1" onclick="toggleRelay(1)">
       <div class="relay-icon-wrap" id="icon-relay1">💡</div>
-      <div class="relay-info"><div class="relay-name">Main Light</div><div class="relay-sub">Relay 1 · D1</div><div class="relay-status-text" id="status-relay1">● Offline</div></div>
+      <div class="relay-info"><div class="relay-name">Main Light</div><div class="relay-sub">Relay 1 · Bedroom</div><div class="relay-status-text" id="status-relay1">● Inactive</div></div>
       <div class="toggle-wrap"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="relay1" onchange="handleToggle(1)"><div class="toggle-track"></div><div class="toggle-knob"></div></label></div>
     </div>
     <div class="relay-card" id="card-relay2" onclick="toggleRelay(2)">
       <div class="relay-icon-wrap" id="icon-relay2">🌙</div>
-      <div class="relay-info"><div class="relay-name">Night Light</div><div class="relay-sub">Relay 2 · D2</div><div class="relay-status-text" id="status-relay2">● Offline</div></div>
+      <div class="relay-info"><div class="relay-name">Night Light</div><div class="relay-sub">Relay 2 · Bedroom</div><div class="relay-status-text" id="status-relay2">● Inactive</div></div>
       <div class="toggle-wrap"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="relay2" onchange="handleToggle(2)"><div class="toggle-track"></div><div class="toggle-knob"></div></label></div>
     </div>
     <div class="relay-card" id="card-relay3" onclick="toggleRelay(3)">
       <div class="relay-icon-wrap" id="icon-relay3">🌀</div>
-      <div class="relay-info"><div class="relay-name">Fan</div><div class="relay-sub">Relay 3 · D3</div><div class="relay-status-text" id="status-relay3">● Offline</div></div>
+      <div class="relay-info"><div class="relay-name">Ceiling Fan</div><div class="relay-sub">Relay 3 · Bedroom</div><div class="relay-status-text" id="status-relay3">● Inactive</div></div>
       <div class="toggle-wrap"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="relay3" onchange="handleToggle(3)"><div class="toggle-track"></div><div class="toggle-knob"></div></label></div>
     </div>
     <div class="relay-card" id="card-relay4" onclick="toggleRelay(4)">
       <div class="relay-icon-wrap" id="icon-relay4">🔌</div>
-      <div class="relay-info"><div class="relay-name">Socket</div><div class="relay-sub">Relay 4 · D4</div><div class="relay-status-text" id="status-relay4">● Offline</div></div>
+      <div class="relay-info"><div class="relay-name">Smart Socket</div><div class="relay-sub">Relay 4 · Bedroom</div><div class="relay-status-text" id="status-relay4">● Inactive</div></div>
       <div class="toggle-wrap"><label class="toggle" onclick="event.stopPropagation()"><input type="checkbox" id="relay4" onchange="handleToggle(4)"><div class="toggle-track"></div><div class="toggle-knob"></div></label></div>
     </div>
   </div>
 
-  <div class="section-label">Sensor History (last 20 readings)</div>
-  <div class="chart-card fade-in" style="margin-bottom:24px">
-    <div class="chart-header">
-      <div class="chart-title">Live Trends</div>
-      <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Temp °C</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> Humidity %</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Gas/10</div>
-      </div>
-    </div>
-    <canvas id="historyChart"></canvas>
-  </div>
-
+  <!-- Event log -->
   <div class="section-label">Event Log</div>
   <div class="log-card fade-in">
     <div class="log-header">
@@ -349,7 +385,6 @@ function toggleTheme(){
   html.setAttribute('data-theme',isDark?'light':'dark');
   const icon=isDark?'🌙':'☀️';
   ['themeIconLogin','themeIcon'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=icon;});
-  redrawChart();
 }
 
 /* ── EYE ── */
@@ -375,7 +410,6 @@ function handleLogin(e){
       document.getElementById('loginPage').classList.add('hidden');
       document.getElementById('dashPage').classList.add('visible');
       document.getElementById('mqttClientId').value='nexhome-'+Math.random().toString(36).slice(2,8);
-      redrawChart();
     },2200);
   },1100);
 }
@@ -395,8 +429,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!document.getElement
 
 /* ── MQTT STATE ── */
 let client=null,isConnected=false,baseTopic='nexhome',configOpen=false;
-const historyData={labels:[],temp:[],hum:[],gas:[]};
-const MAX_HISTORY=20;
 
 function toggleConfig(){configOpen=!configOpen;document.getElementById('configPanel').classList.toggle('open',configOpen);}
 
@@ -423,10 +455,9 @@ function onConnect(){
   showToast('✅ Connected to MQTT broker','success');
   toggleConfig();
   client.subscribe(baseTopic+'/sensors/dht');
-  client.subscribe(baseTopic+'/sensors/gas');
   for(let i=1;i<=4;i++){
-    client.subscribe(baseTopic+`/relay/${i}`);       // command topic (cross-device sync)
-    client.subscribe(baseTopic+`/relay/${i}/state`); // state topic (hardware feedback)
+    client.subscribe(baseTopic+`/relay/${i}`);
+    client.subscribe(baseTopic+`/relay/${i}/state`);
   }
   addLog('Subscribed to sensor + relay topics','success');
 }
@@ -436,10 +467,8 @@ function disconnectMQTT(){if(client&&isConnected){client.disconnect();isConnecte
 function handleMessage(msg){
   const t=msg.destinationName,payload=msg.payloadString;
   addLog(`↓ ${t} → ${payload}`);
-  if(t===baseTopic+'/sensors/dht'){try{let d=payload.startsWith('{')?JSON.parse(payload):{temp:parseFloat(payload.split(',')[0]),hum:parseFloat(payload.split(',')[1])};updateTemp(d.temp);updateHum(d.hum);pushHistory(d.temp,d.hum,null);}catch(e){addLog('DHT parse error','warn');}}
-  if(t===baseTopic+'/sensors/gas'){try{let g=payload.startsWith('{')?JSON.parse(payload).gas:parseFloat(payload);updateGas(g);pushHistory(null,null,g);}catch(e){addLog('Gas parse error','warn');}}
+  if(t===baseTopic+'/sensors/dht'){try{let d=payload.startsWith('{')?JSON.parse(payload):{temp:parseFloat(payload.split(',')[0]),hum:parseFloat(payload.split(',')[1])};updateTemp(d.temp);updateHum(d.hum);}catch(e){addLog('AHT20 parse error','warn');}}
   for(let i=1;i<=4;i++){
-    // React to BOTH the command topic and the hardware state topic
     if(t===baseTopic+`/relay/${i}`||t===baseTopic+`/relay/${i}/state`){
       const on=payload==='1'||payload.toLowerCase()==='on'||payload.toLowerCase()==='true';
       setRelayUI(i,on);
@@ -447,61 +476,46 @@ function handleMessage(msg){
   }
 }
 
+/* ── SCENES ── */
+// Relay map: 1=Main Light, 2=Night Light, 3=Ceiling Fan, 4=Smart Socket
+const SCENES={
+  home: [true,true,true,true],   // all ON
+  sleep:[false,true,true,false], // Night Light + Fan
+  away: [false,false,false,false],// all OFF
+  movie:[false,true,false,false]  // Night Light only
+};
+function activateScene(name){
+  ['home','sleep','away','movie'].forEach(s=>{
+    document.getElementById('scene-'+s).classList.toggle('active',s===name);
+  });
+  const states=SCENES[name];
+  for(let i=0;i<4;i++) publishRelay(i+1,states[i],true);
+  const labels={home:'🏠 Home — all on',sleep:'🌙 Sleep — night light & fan',away:'🚶 Away — all off',movie:'🎬 Movie — night light only'};
+  showToast(labels[name],'success');
+  addLog(`Scene activated: ${name}`,'success');
+}
+
+/* ── RELAY ── */
 function handleToggle(n){publishRelay(n,document.getElementById(`relay${n}`).checked);}
 function toggleRelay(n){const c=document.getElementById(`relay${n}`);c.checked=!c.checked;handleToggle(n);}
-function publishRelay(n,state){
+function publishRelay(n,state,silent){
   const payload=state?'1':'0',topic=`${baseTopic}/relay/${n}`;
-  if(isConnected){const msg=new Paho.MQTT.Message(payload);msg.destinationName=topic;msg.retained=true;client.send(msg);addLog(`↑ ${topic} → ${payload}`,'success');showToast(`Relay ${n} ${state?'ON':'OFF'}`,state?'success':'warn');}
-  else{addLog(`Not connected — cannot publish`,'error');showToast('Not connected','error');document.getElementById(`relay${n}`).checked=!state;}
+  if(isConnected){
+    const msg=new Paho.MQTT.Message(payload);msg.destinationName=topic;msg.retained=true;client.send(msg);
+    addLog(`↑ ${topic} → ${payload}`,'success');
+    if(!silent)showToast(`Relay ${n} ${state?'ON':'OFF'}`,state?'success':'warn');
+  }else{
+    if(!silent){addLog('Not connected — cannot publish','error');showToast('Not connected','error');}
+  }
   setRelayUI(n,state);
 }
 function setRelayUI(n,on){document.getElementById(`relay${n}`).checked=on;document.getElementById(`card-relay${n}`).classList.toggle('on',on);document.getElementById(`status-relay${n}`).textContent=on?'● Active':'● Inactive';}
 
+/* ── SENSORS ── */
 function updateTemp(v){document.getElementById('tempVal').innerHTML=`${v.toFixed(1)}<span class="unit">°C</span>`;document.getElementById('tempBar').style.width=Math.min(100,Math.max(0,((v-0)/60)*100))+'%';document.getElementById('tempStatus').textContent=v<18?'❄️ Cold':v<26?'🌤 Comfortable':v<35?'☀️ Warm':'🔥 Hot';}
 function updateHum(v){document.getElementById('humVal').innerHTML=`${v.toFixed(1)}<span class="unit">%</span>`;document.getElementById('humBar').style.width=Math.min(v,100)+'%';document.getElementById('humStatus').textContent=v<30?'🌵 Very dry':v<50?'✅ Optimal':v<70?'💧 Humid':'🌊 Very humid';}
-function updateGas(v){document.getElementById('gasVal').innerHTML=`${Math.round(v)}<span class="unit">ppm</span>`;document.getElementById('gasBar').style.width=Math.min(100,(v/1000)*100)+'%';const alert=document.getElementById('gasAlert');if(v>500){document.getElementById('gasStatus').textContent='⚠️ Danger!';alert.classList.add('show');showToast('⚠️ HIGH GAS LEVEL!','error');}else if(v>200){document.getElementById('gasStatus').textContent='⚠️ Elevated';alert.classList.remove('show');}else{document.getElementById('gasStatus').textContent='✅ Normal';alert.classList.remove('show');}}
 
-function pushHistory(temp,hum,gas){
-  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  if(historyData.labels.length===0||historyData.labels[historyData.labels.length-1]!==now){
-    historyData.labels.push(now);
-    historyData.temp.push(temp!==null?temp:(historyData.temp[historyData.temp.length-1]??null));
-    historyData.hum.push(hum!==null?hum:(historyData.hum[historyData.hum.length-1]??null));
-    historyData.gas.push(gas!==null?gas:(historyData.gas[historyData.gas.length-1]??null));
-    if(historyData.labels.length>MAX_HISTORY){historyData.labels.shift();historyData.temp.shift();historyData.hum.shift();historyData.gas.shift();}
-  }else{const i=historyData.labels.length-1;if(temp!==null)historyData.temp[i]=temp;if(hum!==null)historyData.hum[i]=hum;if(gas!==null)historyData.gas[i]=gas;}
-  redrawChart();
-}
-
-function redrawChart(){
-  const canvas=document.getElementById('historyChart');if(!canvas)return;
-  const ctx=canvas.getContext('2d'),W=canvas.offsetWidth,H=160;
-  canvas.width=W*window.devicePixelRatio;canvas.height=H*window.devicePixelRatio;ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
-  const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const gridCol=dark?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.06)',textCol=dark?'#4a5568':'#9ca3af';
-  ctx.fillStyle=dark?'#111827':'#ffffff';ctx.fillRect(0,0,W,H);
-  const data=historyData,n=data.labels.length;
-  if(n<2){ctx.fillStyle=textCol;ctx.font='12px Space Mono,monospace';ctx.textAlign='center';ctx.fillText('Waiting for sensor data...',W/2,H/2);return;}
-  const PAD={t:10,r:10,b:30,l:10},cW=W-PAD.l-PAD.r,cH=H-PAD.t-PAD.b;
-  ctx.strokeStyle=gridCol;ctx.lineWidth=1;
-  for(let g=0;g<=4;g++){const y=PAD.t+(cH/4)*g;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(W-PAD.r,y);ctx.stroke();}
-  function drawLine(values,color){
-    const pts=values.map((v,i)=>({x:PAD.l+(i/(n-1))*cW,y:PAD.t+cH-Math.min(1,Math.max(0,v/100))*cH,v})).filter(p=>p.v!==null&&!isNaN(p.v));
-    if(pts.length<2)return;
-    const grad=ctx.createLinearGradient(0,PAD.t,0,PAD.t+cH);grad.addColorStop(0,color+'33');grad.addColorStop(1,color+'00');
-    ctx.beginPath();ctx.moveTo(pts[0].x,PAD.t+cH);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,PAD.t+cH);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-    for(let i=1;i<pts.length;i++){const cp=(pts[i-1].x+pts[i].x)/2;ctx.bezierCurveTo(cp,pts[i-1].y,cp,pts[i].y,pts[i].x,pts[i].y);}
-    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
-    const lp=pts[pts.length-1];ctx.beginPath();ctx.arc(lp.x,lp.y,4,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
-  }
-  drawLine(data.temp,'#fb923c');drawLine(data.hum,'#38bdf8');drawLine(data.gas.map(g=>g/10),'#f87171');
-  ctx.fillStyle=textCol;ctx.font='9px Space Mono,monospace';ctx.textAlign='center';
-  const step=Math.max(1,Math.floor(n/5));
-  for(let i=0;i<n;i+=step){ctx.fillText(data.labels[i],PAD.l+(i/(n-1))*cW,H-8);}
-}
-window.addEventListener('resize',redrawChart);
-
+/* ── UTILITIES ── */
 function addLog(msg,type=''){
   const log=document.getElementById('logBody'),now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const div=document.createElement('div');div.className=`log-entry ${type}`;
